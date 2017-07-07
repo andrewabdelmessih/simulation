@@ -1,56 +1,65 @@
 clc
-
-clear; close all;
+clear; 
+close all;
 warning off;
 
 time_delay = 0.05;
-axLim = [-4 4 -1 4 -10 10 ];
+
 % hold on
 % grid on
 numLinks = 4;
-L = repmat(Link('d', 0, 'a', 1, 'alpha', 0, 'm', .001, 'r', [-0.5, 0, 0]), numLinks, 1);
+L = repmat(Link('d', 0, 'a', 40, 'alpha', 0, 'm', .001, 'r', [-0.5, 0, 0]), numLinks, 1);
 R = SerialLink(L);
+axLim = [sum(R.a)*[-1 1 -1 1] -100 100];
 % base = R.base
 % R.base = trotx(pi/2)*;
 
 R.plotopt = {'view', 'top', 'noshading', 'noname', 'ortho', ...
     'workspace', axLim, 'tile1color', [1,1,1], 'delay', time_delay, 'trail', '',...
     'noshadow', 'nobase', 'nowrist'};
+% axis(axLim); axis square; hold on;
+
+Base_InputInMM      = 20; % input the distance on the axis for the base module
+First_InputInMM     = 20; % input the distance on the axis for the first module
+Second_InputInMM    = 20; % input the distance on the axis for the second module
+Third_InputInMM     = 20; % input the distance on the axis for the third module
+
+BaseValueInMM       = Base_InputInMM;
+FirstValueInMM      = First_InputInMM +  Base_InputInMM;
+SecondValueInMM     = Second_InputInMM + FirstValueInMM;
+ThirdValueInMM      = Third_InputInMM + SecondValueInMM;
+
+Numberofturns_base  = BaseValueInMM/20 
+Angle_base          = atan(BaseValueInMM/40)
+
+Numberofturns_first = FirstValueInMM/20
+Angle_first         = atan(FirstValueInMM/40)
+
+Numberofturns_second= SecondValueInMM/20 
+Angle_second        = atan(SecondValueInMM/40)
+
+Numberofturns_third = ThirdValueInMM/20 
+Angle_third         = atan(ThirdValueInMM/40)
+
+base_angle          = linspace(0,Angle_base,25);
+first_angle         = linspace(0,Angle_first,25);
+second_angle        = linspace(0,Angle_second,25);
+third_angle         = linspace(0,Angle_third,25);
+
+base_angle_min      = min (base_angle);
+first_angle_min     = min (first_angle);
+second_angle_min    = min (second_angle);
+third_angle_min     = min (third_angle);
+
+
+h = gcf;
+R.plot(zeros(1,R.n));
 axis(axLim); axis square; hold on;
-
-InputInMM =40 % input the distance on the axis
-
-Numberofturns_base = InputInMM/20 
-Angle_base = atan(InputInMM/20)
-Angle_base_radians = (pi/180)*Angle_base
-
-base_angle   = [linspace(pi/3,2*pi/3,25), linspace(2*pi/3,pi/3,25)];
-first_angle  = [linspace(-pi/3,pi/3,25), linspace(pi/3,-pi/3,25)];
-second_angle = [linspace(pi/3,-pi/3,25), linspace(-pi/3,pi/3,25)];
-third_angle  = [linspace(-pi/3,pi/3,25), linspace(pi/3,-pi/3,25)];
-
-base_angle_min   = min (base_angle);
-first_angle_min  = min (first_angle);
-second_angle_min = min (second_angle);
-third_angle_min  = min (third_angle);
-
-
-pause(1)
-base_angle_start   = [linspace(pi/2,base_angle_min,25)];
-first_angle_start  = [linspace(0,first_angle_min,25)];
-second_angle_start = [linspace(0,second_angle_min,25)];
-third_angle_start  = [linspace(0,third_angle_min,25)];
-
-
-R.plot([pi/2 0 0 0])
-pause(1)
-
-h = figure;
 axis tight manual % this ensures that getframe() returns a consistent size
 filename = 'testAnimated.gif';
 
-for j = 1:(length(base_angle)/2)
-    R.plot([base_angle_start(j) -first_angle_start(j) second_angle_start(j) -third_angle_start(j)])
+for j = 1:(length(base_angle))
+    R.plot([base_angle(j) -first_angle(j) second_angle(j) -third_angle(j)])
     
       % Capture the plot as an image 
       frame = getframe(h); 
